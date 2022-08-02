@@ -1,7 +1,3 @@
-
-from pickle import TRUE
-
-
 MENU_OPTIONS = {
     1: 'Ajouter un livre',
     2: 'Retirer un livre',
