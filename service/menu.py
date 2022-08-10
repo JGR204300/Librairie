@@ -1,4 +1,4 @@
-from service.book import add_book, remove_book, show_books, show_nb_books, update
+from service.book import *
 
 
 MENU_OPTIONS = {
@@ -29,6 +29,7 @@ def run_option(option):
             case 6:
                 update(field="quantity")
             case 7:
+                save_book()
                 exit()
     except KeyError:
         print('Merci de saisir un nombre entre 1 et 7\n')

@@ -1,4 +1,4 @@
-import service.modif as modif
+import csv
 
 
 def search_book(select_title):
@@ -24,10 +24,10 @@ def add_book():
             print("Titre déja présent")
 
     # Saisi du nouveau prix
-    new_price = modif.price()
+    new_price = price()
 
     # Saisi de la nouvelle quantité
-    new_qty = modif.qty()
+    new_qty = qty()
 
     # Ajout du nouveau livre
     new_book = {'title': new_title, 'price': new_price, 'quantity': new_qty}
@@ -63,7 +63,7 @@ def show_books():
     '''Affichage de tous les titres de la librairie'''
     for book in library:
         book_title = book["title"]
-        book_price = "%.2f" % book["price"] + '€'
+        book_price = "%.2f" % float(book["price"]) + '€'
         book_qty = book["quantity"]
         print('Titre:', book_title, ' Prix:', book_price, 'Qté:', book_qty)
     print('\n')
@@ -89,7 +89,7 @@ def update(field):
             book_price = "%.2f" % library[book_position]["price"] + '€'
             print('Le prix actuel du livre est de', book_price)
             # Saisi du nouveau prix
-            library[book_position]["price"] = modif.price()
+            library[book_position]["price"] = price()
 
         # Modification de la quantité de livre
         else:
@@ -97,10 +97,62 @@ def update(field):
             book_qty = library[book_position]["quantity"]
             print('La quantité actuelle du livre est de', book_qty)
             # Saisi de la nouvelle quantité
-            library[book_position]["quantity"] = modif.qty()
+            library[book_position]["quantity"] = qty()
 
         print('Modification terimnée')
         book_title = library[book_position]["title"]
         book_price = "%.2f" % library[book_position]["price"] + '€'
         book_qty = library[book_position]["quantity"]
         print('Titre:', book_title, ' Prix:', book_price, '  Qté:', book_qty, '\n')
+
+
+def price():
+    while True:
+        try:
+            new_price = round(float(input('Prix: ')), 2)
+            if 0 <= new_price:
+                return new_price
+                break
+            else:
+                print('Sairsir un prix superieur ou égal à zéro')
+        except ValueError:
+            print('Sairsir un prix superieur ou égal à zéro')
+
+
+def qty():
+    while True:
+        try:
+            new_qty = int(input('Quantité: '))
+            if 0 <= new_qty:
+                return new_qty
+                break
+            else:
+                print('Sairsir un entier superieur ou égal à zéro')
+        except ValueError:
+            print('Sairsir un entier superieur ou égal à zéro')
+
+
+def load_book():
+    try:
+        with open('books.csv', mode='r', encoding='utf-8', newline='') as csv_file:
+            pass
+    except FileNotFoundError:
+        save_book()
+    with open('books.csv', mode='r', encoding='utf-8', newline='') as csv_file:
+        library_load = csv.reader(csv_file)
+        nb_line = 0
+        for row in library_load:
+            if nb_line != 0:
+                book = {'title': row[0], 'price':  row[1], 'quantity': row[2]}
+                library.append(book)
+            nb_line += 1
+
+
+def save_book():
+    with open('books.csv', mode='w', encoding='utf-8', newline='') as csv_file:
+        dict_writer = csv.DictWriter(csv_file, fieldnames=['title', 'price', 'quantity'])
+        dict_writer.writeheader()
+        line = {}
+        for book in library:
+            line = book
+            dict_writer.writerow(line)
