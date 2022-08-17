@@ -1,4 +1,5 @@
 import csv
+import service.app_log as app_log
 
 
 def search_book(select_title):
@@ -10,6 +11,7 @@ def search_book(select_title):
     return book_position
 
 
+@app_log.log_file
 def add_book():
     '''Ajout d'un nouveau titre'''
     global library
@@ -44,6 +46,7 @@ def add_book():
     print('Titre:', book_title, ' Prix:', book_price, '  Qté:', book_qty, '\n')
 
 
+@app_log.log_file
 def remove_book():
     '''Suppression d'un livre'''
     book_position = search_book(input('Saisir le titre du livre à supprimer: '))
@@ -59,6 +62,7 @@ def remove_book():
             print('Suppression annulée!\n')
 
 
+@app_log.log_file
 def show_books():
     '''Affichage de tous les titres de la librairie'''
     for book in library:
@@ -69,9 +73,10 @@ def show_books():
     print('\n')
 
 
+@app_log.log_file
 def show_nb_books():
-    '''Affichage du nombre de titre de la librairie
-    et du nombre total de livre'''
+    '''Affichage du nombre de titre de la librairie \
+et du nombre total de livre'''
     print('Nombre de titre de la librairie: ', len(library))
     sum = 0
     for book in library:
@@ -79,6 +84,7 @@ def show_nb_books():
     print('Nombre total de livres:', sum, '\n')
 
 
+@app_log.log_file
 def update(field):
     '''Modification du prix ou de la quantité d'un livre'''
     book_position = search_book(input('Saisir le titre du livre à modifier: '))
@@ -86,7 +92,7 @@ def update(field):
         # Modification du prix du livre
         if field == "price":
             # Affichage du prix avant modification
-            book_price = "%.2f" % library[book_position]["price"] + '€'
+            book_price = "%.2f" % float(library[book_position]["price"]) + '€'
             print('Le prix actuel du livre est de', book_price)
             # Saisi du nouveau prix
             library[book_position]["price"] = price()
@@ -101,7 +107,7 @@ def update(field):
 
         print('Modification terimnée')
         book_title = library[book_position]["title"]
-        book_price = "%.2f" % library[book_position]["price"] + '€'
+        book_price = "%.2f" % float(library[book_position]["price"]) + '€'
         book_qty = library[book_position]["quantity"]
         print('Titre:', book_title, ' Prix:', book_price, '  Qté:', book_qty, '\n')
 
@@ -132,23 +138,23 @@ def qty():
             print('Sairsir un entier superieur ou égal à zéro')
 
 
+@app_log.log_file
 def load_book():
+    '''Chargement du fichier csv'''
     try:
         with open('books.csv', mode='r', encoding='utf-8', newline='') as csv_file:
             pass
     except FileNotFoundError:
         save_book()
     with open('books.csv', mode='r', encoding='utf-8', newline='') as csv_file:
-        library_load = csv.reader(csv_file)
-        nb_line = 0
-        for row in library_load:
-            if nb_line != 0:
-                book = {'title': row[0], 'price':  row[1], 'quantity': row[2]}
-                library.append(book)
-            nb_line += 1
+        library_load = csv.DictReader(csv_file)
+        for row_book in library_load:
+            library.append(row_book)
 
 
+@app_log.log_file
 def save_book():
+    '''Sauvegarde de la librairie en csv'''
     with open('books.csv', mode='w', encoding='utf-8', newline='') as csv_file:
         dict_writer = csv.DictWriter(csv_file, fieldnames=['title', 'price', 'quantity'])
         dict_writer.writeheader()
